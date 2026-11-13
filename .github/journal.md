@@ -127,3 +127,15 @@ faire passer un test qui échoue : Ask avec context
 **Correction liée :** ajouté l’animation de suppression de lignes et l’affichage du score final; couvert le rendu, la réduction des animations et les commandes clavier par des tests.
 
 **Outil utilisé :** Copilot, éditeur de code, Vitest et navigateur.
+
+
+# A. Combien de requêtes agent et combien d’interventions manuelles a demandé le jeu complet ? Quelle étape a été reprise, et grâce à quelle information ?
+
+J'ai eu besoins de 1 requête par étape, copilot à su faire les étape correctement, j'ai à partir de l'étape 3 si le jeux était jouable, tous fonctionne.
+
+# B. Trouver une violation de copilot-instructions.md dans le code produit (langue, structure, fichier modifié hors tâche). Comment la faire corriger sans répéter la consigne ?
+
+Violation repérée : la structure demandée par `.github/copilot-instruction.md` prévoit `styles.css` à la racine, mais la feuille de style créée se trouve dans `src/ui/style.css` et est référencée ainsi dans `index.html`.
+
+Pour la faire corriger sans répéter toute la consigne, référencer le fichier d’instructions et demander uniquement la correction de cet écart : « En ce basant sur `.github/copilot-instruction.md`, corrige l’écart de structure de la feuille de style, mets à jour son lien dans `index.html` et ne modifie rien d’autre. »
+
