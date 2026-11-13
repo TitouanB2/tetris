@@ -37,6 +37,16 @@ export const PIECES =  {
     ]
 }
 
+export const PIECE_COLORS = {
+    I: "#00FFFF",
+    O: "#FFFF00",
+    T: "#800080",
+    S: "#00FF00",
+    Z: "#FF0000",
+    J: "#0000FF",
+    L: "#FFA500"
+};
+
 /**Fait tourner un matrice carrée d'un quart de tour horaire */
 export const rotate = (matrix) => {
     if (!Array.isArray(matrix)) {

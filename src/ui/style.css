@@ -1,0 +1,165 @@
+:root {
+    color-scheme: dark;
+    font-family: system-ui, sans-serif;
+    background: #111827;
+    color: #f9fafb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+button {
+    min-height: 42px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: #1e293b;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+    background: #334155;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.game {
+    width: min(100%, 620px);
+}
+
+.game__header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.game__header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.game__header p {
+    margin: 6px 0 0;
+    color: #cbd5e1;
+}
+
+.game__layout {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 24px;
+}
+
+.game__board {
+    display: block;
+    width: min(300px, calc(100vw - 48px));
+    height: auto;
+    border: 2px solid #475569;
+    background: #0b1220;
+}
+
+.game__panel {
+    width: 220px;
+}
+
+.game__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 0 0 20px;
+}
+
+.game__stats div {
+    min-width: 0;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 8px;
+    background: #1e293b;
+}
+
+.game__stats dt {
+    color: #cbd5e1;
+    font-size: 0.75rem;
+}
+
+.game__stats dd {
+    margin: 4px 0 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.game__preview h2 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+}
+
+.game__preview canvas {
+    display: block;
+    max-width: 100%;
+    border: 1px solid #475569;
+    background: #0b1220;
+}
+
+.game__status {
+    min-height: 24px;
+    margin: 16px 0;
+    color: #fbbf24;
+    font-weight: 700;
+}
+
+.game__final-score {
+    margin: -8px 0 16px;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.game__board {
+    contain: paint;
+}
+
+.game__buttons {
+    display: grid;
+    gap: 8px;
+}
+
+.game__help {
+    color: #cbd5e1;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+    body {
+        padding: 16px;
+    }
+
+    .game__layout {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .game__panel {
+        width: min(100%, 300px);
+    }
+
+    .game__preview canvas {
+        width: 96px;
+        height: 96px;
+    }
+}
+

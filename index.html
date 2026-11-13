@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#111827">
+        <title>Tetris</title>
+        <link rel="stylesheet" href="./src/ui/style.css">
+        <script type="module" src="./main.js"></script>
+    </head>
+    <body>
+        <main class="game">
+            <header class="game__header">
+                <h1>Tetris</h1>
+                <p>Place les pièces et complète des lignes.</p>
+            </header>
+
+            <section class="game__layout" aria-label="Jeu de Tetris">
+                <canvas
+                    id="board"
+                    class="game__board"
+                    width="300"
+                    height="600"
+                    aria-label="Grille de jeu Tetris"
+                ></canvas>
+
+                <aside class="game__panel" aria-label="Panneau de jeu">
+                    <dl class="game__stats">
+                        <div>
+                            <dt>Score</dt>
+                            <dd id="score">0</dd>
+                        </div>
+                        <div>
+                            <dt>Niveau</dt>
+                            <dd id="level">1</dd>
+                        </div>
+                        <div>
+                            <dt>Lignes</dt>
+                            <dd id="lines">0</dd>
+                        </div>
+                    </dl>
+
+                    <div class="game__preview">
+                        <h2>Pièce suivante</h2>
+                        <canvas
+                            id="next-piece"
+                            width="120"
+                            height="120"
+                            aria-label="Aperçu de la prochaine pièce"
+                        ></canvas>
+                    </div>
+
+                    <p id="game-status" class="game__status" aria-live="polite">Prêt</p>
+                    <p id="final-score" class="game__final-score" aria-live="polite" hidden></p>
+
+                    <div class="game__buttons">
+                        <button id="start" type="button">Démarrer</button>
+                        <button id="pause" type="button" disabled>Pause</button>
+                        <button id="restart" type="button">Recommencer</button>
+                    </div>
+
+                    <p class="game__help">
+                        ← → déplacer · ↑ tourner · ↓ descendre · P pause
+                    </p>
+                </aside>
+            </section>
+        </main>
+    </body>
+</html>

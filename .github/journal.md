@@ -71,3 +71,59 @@ Modifier une fonction : copilot complétion d'une fonction
 comprendre un fichier : Ask avec context
 ajouter une fonctionnalité : Agent
 faire passer un test qui échoue : Ask avec context
+
+
+# Exercice 2 Tetris solo, par étapes planifiées
+
+## 2
+
+## Proposer cinq étapes testables pour Tetris
+
+**Prompt (Copilot) :** « #file :docs/SPEC.md #codebase propose un plan de réalisation en cinq étapes testables, en réutilisant src/core/piece.js »
+
+**Correction liée :** aucune modification de code ; proposé un plan en cinq étapes testables aligné sur la spécification.
+
+**Outil utilisé :** Copilot ask avec context.
+
+## 3 Implémentation des étapes 
+### Je ne peux pas compiler le jeux au départ donc je le compilerais à la fin des 5 étapes 
+
+## Ajouter les couleurs standard des pièces
+
+**Prompt (Copilot) :** « réalise l’étape 1 de #file :docs/PLAN.md »
+
+**Correction liée :** ajouté `PIECE_COLORS` sans modifier les matrices ni `rotate`, et testé le catalogue des sept pièces, leurs couleurs et leur forme.
+
+**Outil utilisé :** Copilot, éditeur de code et Vitest.
+
+## Implémenter la grille de jeu
+
+**Prompt (Copilot) :** « réalise l'étape 2 de #file :docs/PLAN.md »
+
+**Correction liée :** créé `src/core/grid.js` pour créer la grille 10×20, détecter les collisions, poser les pièces sans muter la grille source et supprimer les lignes complètes; ajouté des tests unitaires associés.
+
+**Outil utilisé :** Copilot, éditeur de code et Vitest.
+
+## Créer le moteur de partie
+
+**Prompt (Copilot) :** « réalise l'étape 3 de #file :docs/PLAN.md »
+
+**Correction liée :** créé `src/core/game.js` avec état de partie, RNG injectable ou initialisable par graine, déplacements, rotations avec collisions, verrouillage, apparition de la pièce suivante et game over; ajouté des tests unitaires. Ajout de l'interface utilisateur 
+
+**Outil utilisé :** Copilot, éditeur de code et Vitest.
+
+## Ajouter le score et la progression
+
+**Prompt (Copilot) :** « réalise l'étape 4 de #file :docs/PLAN.md »
+
+**Correction liée :** ajouté le barème du score, le niveau toutes les dix lignes et l’accélération de la chute (1 000 ms au niveau 1, −100 ms par niveau, minimum 100 ms), avec affichage des statistiques et tests.
+
+**Outil utilisé :** Copilot, éditeur de code et Vitest.
+
+## Relier l’interface et les commandes
+
+**Prompt (Copilot) :** « réalise l'étape 5 de #file :docs/PLAN.md »
+
+**Correction liée :** ajouté l’animation de suppression de lignes et l’affichage du score final; couvert le rendu, la réduction des animations et les commandes clavier par des tests.
+
+**Outil utilisé :** Copilot, éditeur de code, Vitest et navigateur.
