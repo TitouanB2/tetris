@@ -1,3 +1,24 @@
 {
-  "type": "module"
+  "type": "module",
+  "name": "tetris-1",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TitouanB2/tetris.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TitouanB2/tetris/issues"
+  },
+  "homepage": "https://github.com/TitouanB2/tetris#readme",
+  "devDependencies": {
+    "vitest": "^5.1.0"
+  }
 }
