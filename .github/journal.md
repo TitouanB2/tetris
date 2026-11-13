@@ -139,3 +139,9 @@ Violation repérée : la structure demandée par `.github/copilot-instruction.md
 
 Pour la faire corriger sans répéter toute la consigne, référencer le fichier d’instructions et demander uniquement la correction de cet écart : « En ce basant sur `.github/copilot-instruction.md`, corrige l’écart de structure de la feuille de style, mets à jour son lien dans `index.html` et ne modifie rien d’autre. »
 
+# C. L’étape 2 aurait-elle été possible en un seul prompt comme au TP3 ? Qu’auriez-vous perdu ?
+
+Oui, un prompt détaillé aurait pu demander toute l’étape 2 en une fois : création de la grille, détection des collisions, pose des pièces et suppression des lignes complètes. Mais on aurais perdu les validations intermédiaires de l'utilisateur et les potentiels retours : les tests séparés ont permis de vérifier chaque règle et de vériier et corriger plus facilement les erreurs. Le découpage rend aussi le code plus simple à comprendre et à faire évoluer. Car en une seule étape tous le code est générer en une seule étape donc la relecture est moins évidente.
+
+# Exercice 3 Tests : fermer la boucle dans l’éditeur
+
