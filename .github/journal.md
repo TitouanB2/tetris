@@ -94,7 +94,7 @@ faire passer un test qui échoue : Ask avec context
 
 **Correction liée :** ajouté `PIECE_COLORS` sans modifier les matrices ni `rotate`, et testé le catalogue des sept pièces, leurs couleurs et leur forme.
 
-**Outil utilisé :** Copilot, éditeur de code et Vitest.
+**Outil utilisé :** Mode agent 
 
 ## Implémenter la grille de jeu
 
@@ -102,7 +102,7 @@ faire passer un test qui échoue : Ask avec context
 
 **Correction liée :** créé `src/core/grid.js` pour créer la grille 10×20, détecter les collisions, poser les pièces sans muter la grille source et supprimer les lignes complètes; ajouté des tests unitaires associés.
 
-**Outil utilisé :** Copilot, éditeur de code et Vitest.
+**Outil utilisé :** Mode agent 
 
 ## Créer le moteur de partie
 
@@ -110,7 +110,7 @@ faire passer un test qui échoue : Ask avec context
 
 **Correction liée :** créé `src/core/game.js` avec état de partie, RNG injectable ou initialisable par graine, déplacements, rotations avec collisions, verrouillage, apparition de la pièce suivante et game over; ajouté des tests unitaires. Ajout de l'interface utilisateur 
 
-**Outil utilisé :** Copilot, éditeur de code et Vitest.
+**Outil utilisé :** Mode agent 
 
 ## Ajouter le score et la progression
 
@@ -118,7 +118,7 @@ faire passer un test qui échoue : Ask avec context
 
 **Correction liée :** ajouté le barème du score, le niveau toutes les dix lignes et l’accélération de la chute (1 000 ms au niveau 1, −100 ms par niveau, minimum 100 ms), avec affichage des statistiques et tests.
 
-**Outil utilisé :** Copilot, éditeur de code et Vitest.
+**Outil utilisé :** Mode agent .
 
 ## Relier l’interface et les commandes
 
@@ -126,7 +126,7 @@ faire passer un test qui échoue : Ask avec context
 
 **Correction liée :** ajouté l’animation de suppression de lignes et l’affichage du score final; couvert le rendu, la réduction des animations et les commandes clavier par des tests.
 
-**Outil utilisé :** Copilot, éditeur de code, Vitest et navigateur.
+**Outil utilisé :** Mode agent 
 
 
 # A. Combien de requêtes agent et combien d’interventions manuelles a demandé le jeu complet ? Quelle étape a été reprise, et grâce à quelle information ?
@@ -144,4 +144,22 @@ Pour la faire corriger sans répéter toute la consigne, référencer le fichier
 Oui, un prompt détaillé aurait pu demander toute l’étape 2 en une fois : création de la grille, détection des collisions, pose des pièces et suppression des lignes complètes. Mais on aurais perdu les validations intermédiaires de l'utilisateur et les potentiels retours : les tests séparés ont permis de vérifier chaque règle et de vériier et corriger plus facilement les erreurs. Le découpage rend aussi le code plus simple à comprendre et à faire évoluer. Car en une seule étape tous le code est générer en une seule étape donc la relecture est moins évidente.
 
 # Exercice 3 Tests : fermer la boucle dans l’éditeur
+
+# 1 
+Pour la 1ere étape de cette éxecice copilot avait déjà généré les test lors des étapes donc je n'ai pas besoins de lui demandé.
+
+## Mesurer la couverture du code
+
+**Prompt (Copilot) :** « Pour cette étape permettant de tester l'ensemble du code installe @vitest/coverage-v8, ajoute un script "coverage": "vitest run –coverage" et vise 80 % de couverture sur src/core si le résultat est inférieur à 80% de coverage rajoite les test nécessaire »
+
+**Correction liée :** installé `@vitest/coverage-v8`, ajouté le script `coverage` et un seuil minimal de 80 % pour `src/core`. La couverture mesurée  après l'installation est de 90.7% dpc aucun test supplémentaire n’a été nécessaire.
+
+**Outil utilisé :** Copilot agent
+
+# 4
+
+**Prompt (Copilot) :** « #terminalLastCommand fais passer les tests »
+
+**Correction liée :** Copilot à vu que la couverture de code était différent que précédement il a donc chercher et corrigé la source du problème
+
 
