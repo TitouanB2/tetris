@@ -145,7 +145,7 @@ Oui, un prompt détaillé aurait pu demander toute l’étape 2 en une fois : cr
 
 # Exercice 3 Tests : fermer la boucle dans l’éditeur
 
-# 1 
+## 1 
 Pour la 1ere étape de cette éxecice copilot avait déjà généré les test lors des étapes donc je n'ai pas besoins de lui demandé.
 
 ## Mesurer la couverture du code
@@ -156,10 +156,46 @@ Pour la 1ere étape de cette éxecice copilot avait déjà généré les test lo
 
 **Outil utilisé :** Copilot agent
 
-# 4
+## 4 Bug volontaire 
 
 **Prompt (Copilot) :** « #terminalLastCommand fais passer les tests »
 
-**Correction liée :** Copilot à vu que la couverture de code était différent que précédement il a donc chercher et corrigé la source du problème
+**Correction liée :** Copilot à vu que la couverture de code était différente de celle précédement réalisé il a donc chercher et corrigé la source du problème car ces agents n'avait pas changé le code
 
+
+## Question A. Trouver un test généré qui passe mais ne vérifie rien d’utile (assertion tautologique, valeur recopiée du code). Le réécrire.
+
+Tous les tests généré par copilot ont été utile 
+
+## Question B. Au point 4, l’agent a-t-il corrigé le code ou aligné le test sur le bug ? Comment formuler la requête pour éviter le second cas ?
+Il a relu les fichier et chercher la source du problème afin de corrigé le code et de respecter la règle formulé à la base.
+S'il avait changé le test, le prompt aurait été : "Répare le test qui ne passe pas sans modifier sont comportement, corrige le code en respectant les règles énnoncé dans le fichier SPEC.md afin que le test passe."
+
+## Question C. Qu’est-ce qui n’est pas couvert dans src/core, et pourquoi (code mort, chemin d’erreur, hasard non injecté) ?
+
+Le dernier rapport `npm run coverage` mesure 93,7 % des lignes, 94,19 % des instructions, 90,74 % des branches et 100 % des fonctions de `src/core`. Les lignes non couvertes correspondent principalement à des chemins d’erreur qui valident des entrées invalides (grille, pièce, position, dimensions, valeur posée, générateur aléatoire et nombre de lignes) et au cas où une pièce est verrouillée au-dessus du plateau. Rien n’indique du code mort : il s’agit surtout de cas limites et de validations qui ne surviennent pas dans les scénarios courants.
+
+# Exercice 4 Mode versus : plusieurs parties simultanées
+
+## 1.
+
+## Ajouter les modes Solo et multijoueur
+
+**Prompt (Copilot) :** «  introduis une classe GameInstance (une partie : grille, pièce courante, score, état) et un GameManager (plusieurs instances, tour de jeu, fin de partie, gagnant = dernier en vie, podium). Écran de choix du mode : Solo, VS 1, 2 ou 3 adversaires. Grilles affichées côte à côte (2x2 au maximum) avec pseudo, score et niveau. Le mode solo doit rester identique. »
+
+**Correction liée :** ajouté `GameInstance` et `GameManager`, le choix Solo/VS, les parties simultanées, des commandes distinctes pour quatre joueurs et le podium; mis à jour la spécification et ajouté des tests. Ajoute des fichier `game-instance.test.js` et `game-manager.test.js`
+
+**Outil utilisé :** Copilot, mode plan.
+
+## Questions
+
+
+### A. Quelles fonctions le refactoring a-t-il déplacées ou renommées ? Un test a-t-il échoué pendant l’opération ? Lequel, et qu’a fait l’agent ?
+
+**Réponse :** Aucune fonction du moteur n’a été déplacée ou renommée : `createGame`, `movePiece` et `rotateCurrentPiece` restent dans `src/core/game.js` et sont réutilisées par la nouvelle classe `GameInstance`. Dans `main.js`, les fonctions locales `move` et `rotate` ont été adaptées pour recevoir l’index du joueur et déléguer au `GameManager`; l’ancienne fonction `getMessage` a été remplacée par la construction des messages d’état dans `render`. Aucun échec des test déjà écrit intermédiaire n’est apparus pendant l'opération . Le résultat final vérifié est de 63 tests réussis.
+
+
+### B. Comparer git diff ex3 ex4 –stat avec ce que vous auriez modifié à la main : l’agent a-t-il touché des fichiers inutiles ?
+
+**Réponse :** Non (sauf si le css n'est pas nécessaire)
 

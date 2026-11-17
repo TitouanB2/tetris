@@ -15,54 +15,29 @@
                 <p>Place les pièces et complète des lignes.</p>
             </header>
 
-            <section class="game__layout" aria-label="Jeu de Tetris">
-                <canvas
-                    id="board"
-                    class="game__board"
-                    width="300"
-                    height="600"
-                    aria-label="Grille de jeu Tetris"
-                ></canvas>
+            <section id="mode-selection" class="mode-selection" aria-labelledby="mode-title">
+                <h2 id="mode-title">Choisir un mode</h2>
+                <div class="mode-selection__buttons">
+                    <button type="button" data-player-count="1">Solo</button>
+                    <button type="button" data-player-count="2">VS 1 adversaire</button>
+                    <button type="button" data-player-count="3">VS 2 adversaires</button>
+                    <button type="button" data-player-count="4">VS 3 adversaires</button>
+                </div>
+            </section>
 
-                <aside class="game__panel" aria-label="Panneau de jeu">
-                    <dl class="game__stats">
-                        <div>
-                            <dt>Score</dt>
-                            <dd id="score">0</dd>
-                        </div>
-                        <div>
-                            <dt>Niveau</dt>
-                            <dd id="level">1</dd>
-                        </div>
-                        <div>
-                            <dt>Lignes</dt>
-                            <dd id="lines">0</dd>
-                        </div>
-                    </dl>
-
-                    <div class="game__preview">
-                        <h2>Pièce suivante</h2>
-                        <canvas
-                            id="next-piece"
-                            width="120"
-                            height="120"
-                            aria-label="Aperçu de la prochaine pièce"
-                        ></canvas>
-                    </div>
-
-                    <p id="game-status" class="game__status" aria-live="polite">Prêt</p>
-                    <p id="final-score" class="game__final-score" aria-live="polite" hidden></p>
-
-                    <div class="game__buttons">
-                        <button id="start" type="button">Démarrer</button>
-                        <button id="pause" type="button" disabled>Pause</button>
-                        <button id="restart" type="button">Recommencer</button>
-                    </div>
-
-                    <p class="game__help">
-                        ← → déplacer · ↑ tourner · ↓ descendre · P pause
-                    </p>
-                </aside>
+            <section id="game-view" class="game-view" aria-label="Jeu de Tetris" hidden>
+                <div id="players" class="boards"></div>
+                <p id="game-status" class="game__status" aria-live="polite"></p>
+                <section id="podium" class="podium" aria-live="polite" hidden>
+                    <h2 id="podium-title"></h2>
+                    <ol id="podium-list"></ol>
+                </section>
+                <div class="game__controls">
+                    <button id="start" type="button">Démarrer</button>
+                    <button id="pause" type="button" disabled>Pause</button>
+                    <button id="restart" type="button">Recommencer</button>
+                    <button id="change-mode" type="button">Changer de mode</button>
+                </div>
             </section>
         </main>
     </body>

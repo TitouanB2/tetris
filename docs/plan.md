@@ -26,11 +26,11 @@ Appliquer le barème de la spécification (100, 300, 500 ou 800 points selon le 
 
 **Tests de validation :** vérifier les scores pour une à quatre lignes, les seuils de niveau et les intervalles de chute; vérifier la mise à jour des compteurs dans l’interface et relancer le jeu dans le navigateur.
 
-## 5. Relier l’interface et les commandes
+## 5. Relier l’interface, les commandes et les modes de jeu
 
-Créer le rendu, la gestion des entrées et le point d’entrée. Ajouter les commandes clavier, les boutons Start/Pause/Restart, l’aperçu de la pièce suivante, l’animation de suppression de ligne, l’affichage du score final et la mise en page responsive.
+Créer le rendu, la gestion des entrées et le point d’entrée. Ajouter les commandes clavier, les boutons Start/Pause/Restart, l’aperçu de la pièce suivante, l’animation de suppression de ligne, l’affichage du score final et la mise en page responsive. Proposer le mode Solo ou VS contre 1 à 3 adversaires, avec les grilles côte à côte et les informations des joueurs.
 
-**Tests de validation :** vérifier les actions clavier et boutons, la mise à jour des panneaux et l’écran de game over; tester l’animation et le rendu à plusieurs tailles d’écran. Lancer également le jeu dans le navigateur.
+**Tests de validation :** vérifier les actions clavier et boutons, la mise à jour des panneaux et l’écran de game over; tester l’animation et le rendu à plusieurs tailles d’écran. En VS, vérifier les parties simultanées, le gagnant et le podium. Lancer également le jeu dans le navigateur.
 
 ## Exécution des tests
 

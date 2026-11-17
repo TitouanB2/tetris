@@ -34,8 +34,8 @@ describe("setupInput", () => {
         target.dispatch(down);
         target.dispatch(createKeyEvent("ArrowUp"));
 
-        expect(onMove.mock.calls).toEqual([[-1, 0], [1, 0], [0, 1]]);
-        expect(onRotate).toHaveBeenCalledOnce();
+        expect(onMove.mock.calls).toEqual([[0, -1, 0], [0, 1, 0], [0, 0, 1]]);
+        expect(onRotate).toHaveBeenCalledWith(0);
         expect(left.preventDefault).toHaveBeenCalledOnce();
         expect(right.preventDefault).toHaveBeenCalledOnce();
         expect(down.preventDefault).toHaveBeenCalledOnce();
@@ -75,5 +75,34 @@ describe("setupInput", () => {
 
         expect(onMove).not.toHaveBeenCalled();
         expect(event.preventDefault).not.toHaveBeenCalled();
+    });
+
+    it("attribue des touches distinctes aux trois adversaires", () => {
+        const target = createEventTarget();
+        const onMove = vi.fn();
+        const onRotate = vi.fn();
+        setupInput({
+            target,
+            playerCount: 4,
+            onMove,
+            onRotate,
+            onTogglePause: vi.fn()
+        });
+
+        ["d", "h", "l"].forEach((key) => target.dispatch(createKeyEvent(key)));
+        ["w", "t", "i"].forEach((key) => target.dispatch(createKeyEvent(key)));
+
+        expect(onMove.mock.calls).toEqual([[1, 1, 0], [2, 1, 0], [3, 1, 0]]);
+        expect(onRotate.mock.calls).toEqual([[1], [2], [3]]);
+    });
+
+    it("rejette un nombre de joueurs hors limites", () => {
+        expect(() => setupInput({
+            target: createEventTarget(),
+            playerCount: 5,
+            onMove: vi.fn(),
+            onRotate: vi.fn(),
+            onTogglePause: vi.fn()
+        })).toThrow("compris entre 1 et 4");
     });
 });

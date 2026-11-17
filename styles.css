@@ -13,8 +13,6 @@ body {
     min-width: 320px;
     min-height: 100vh;
     margin: 0;
-    display: grid;
-    place-items: center;
     padding: 24px;
 }
 
@@ -57,61 +55,142 @@ button:disabled {
     color: #cbd5e1;
 }
 
-.game__layout {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 24px;
+.mode-selection {
+    margin: 32px auto;
+    text-align: center;
 }
 
-.game__board {
+.mode-selection h2 {
+    margin: 0 0 16px;
+}
+
+.mode-selection__buttons,
+.game__controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.game__controls {
+    margin: 20px 0;
+}
+
+.boards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.boards[data-count="1"] {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.player-card {
+    min-width: 0;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 12px;
+    background: #172033;
+}
+
+.boards[data-count="1"] .player-card {
+    width: min(100%, 620px);
+    justify-self: center;
+    padding: 16px;
+}
+
+.player-card__name {
+    margin: 0 0 12px;
+    font-size: 1.125rem;
+}
+
+.player-card__content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.player-card__board {
     display: block;
-    width: min(300px, calc(100vw - 48px));
+    flex: 0 1 48%;
+    width: 48%;
     height: auto;
-    border: 2px solid #475569;
+    border: 1px solid #475569;
+    background: #0b1220;
+    contain: paint;
+}
+
+.boards[data-count="1"] .player-card__board {
+    flex: 0 0 300px;
+    width: 300px;
+}
+
+.player-card__sidebar {
+    flex: 1;
+    min-width: 0;
+}
+
+.player-card__section-title {
+    margin: 0 0 8px;
+    font-size: 0.9rem;
+}
+
+.player-card__preview {
+    display: block;
+    width: min(100%, 120px);
+    height: auto;
+    border: 1px solid #475569;
     background: #0b1220;
 }
 
-.game__panel {
-    width: 220px;
-}
-
-.game__stats {
+.player-card__stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
-    margin: 0 0 20px;
+    margin: 12px 0;
 }
 
-.game__stats div {
+.player-card__stats div {
     min-width: 0;
     border: 1px solid #334155;
     border-radius: 6px;
-    padding: 8px;
+    padding: 6px;
     background: #1e293b;
 }
 
-.game__stats dt {
+.player-card__stats dt {
     color: #cbd5e1;
     font-size: 0.75rem;
 }
 
-.game__stats dd {
+.player-card__stats dd {
     margin: 4px 0 0;
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 700;
 }
 
-.game__preview h2 {
-    margin: 0 0 8px;
-    font-size: 1rem;
+.player-card__help,
+.player-card__status {
+    margin: 8px 0 0;
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    line-height: 1.4;
 }
 
-.game__preview canvas {
-    display: block;
-    max-width: 100%;
-    border: 1px solid #475569;
-    background: #0b1220;
+.player-card__status {
+    min-height: 1.4em;
+    color: #fbbf24;
+    font-weight: 700;
+}
+
+.player-card--eliminated {
+    opacity: 0.7;
+}
+
+.player-card--winner {
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 1px #fbbf24;
 }
 
 .game__status {
@@ -119,16 +198,34 @@ button:disabled {
     margin: 16px 0;
     color: #fbbf24;
     font-weight: 700;
+    text-align: center;
 }
 
-.game__final-score {
-    margin: -8px 0 16px;
-    font-size: 1.125rem;
+.podium {
+    width: min(100%, 420px);
+    margin: 20px auto;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    padding: 16px;
+    background: #1e293b;
+}
+
+.podium h2 {
+    margin: 0 0 8px;
+}
+
+.podium ol {
+    margin-bottom: 0;
+    padding-left: 28px;
+}
+
+.podium li {
+    padding: 4px 0;
+}
+
+.podium__winner {
+    color: #fbbf24;
     font-weight: 700;
-}
-
-.game__board {
-    contain: paint;
 }
 
 .game__buttons {
@@ -147,19 +244,17 @@ button:disabled {
         padding: 16px;
     }
 
-    .game__layout {
+    .boards {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .boards[data-count="1"] .player-card__content {
         flex-direction: column;
-        align-items: center;
-        gap: 16px;
     }
 
-    .game__panel {
-        width: min(100%, 300px);
-    }
-
-    .game__preview canvas {
-        width: 96px;
-        height: 96px;
+    .boards[data-count="1"] .player-card__board {
+        flex-basis: auto;
+        width: min(300px, 100%);
     }
 }
 
