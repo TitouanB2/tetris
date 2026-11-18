@@ -120,14 +120,50 @@ const getBoardFeatures = (grid) => {
     };
 };
 
+/**
+ * Mesure les caractéristiques d'une grille et calcule le score heuristique correspondant.
+ * @param {Array<Array<number|string>>} grid Grille après le placement de la pièce.
+ * @param {number} clearedLines Nombre de lignes complétées par le placement.
+ * @param {"intermediate"|"expert"} level Heuristique à appliquer.
+ * @param {{height?: number, lines?: number, holes?: number, roughness?: number}} [weights] Pondérations expertes; les valeurs par défaut s'appliquent aux coefficients omis.
+ * @returns {{averageHeight: number, aggregateHeight: number, holes: number, roughness: number, score: number}} Mesures et score de la grille.
+ * @throws {Error} Si la grille, le nombre de lignes, le niveau ou les pondérations sont invalides.
+ */
 export const evaluateBoard = (grid, clearedLines, level, weights = DEFAULT_EXPERT_WEIGHTS) => {
+    if (
+        !Array.isArray(grid)
+        || grid.length === 0
+        || !Array.isArray(grid[0])
+        || grid[0].length === 0
+        || grid.some((row) => !Array.isArray(row) || row.length !== grid[0].length)
+    ) {
+        throw new Error("La grille évaluée doit être rectangulaire et non vide");
+    }
+    if (!Number.isInteger(clearedLines) || clearedLines < 0 || clearedLines > 4) {
+        throw new Error("Le nombre de lignes supprimées doit être un entier de 0 à 4");
+    }
+    if (level !== "intermediate" && level !== "expert") {
+        throw new Error("Le niveau d'évaluation doit être intermediate ou expert");
+    }
+    if (
+        !weights
+        || typeof weights !== "object"
+        || Array.isArray(weights)
+        || Object.keys(weights).some((key) => (
+            !(key in DEFAULT_EXPERT_WEIGHTS)
+            || !Number.isFinite(weights[key])
+        ))
+    ) {
+        throw new Error("Les pondérations expertes doivent être des nombres finis");
+    }
     const { averageHeight, aggregateHeight, holes, roughness } = getBoardFeatures(grid);
+    const expertWeights = { ...DEFAULT_EXPERT_WEIGHTS, ...weights };
     const score = level === "intermediate"
         ? -0.5 * averageHeight + 0.76 * clearedLines - 0.8 * holes
-        : weights.height * aggregateHeight
-            + weights.lines * clearedLines
-            + weights.holes * holes
-            + weights.roughness * roughness;
+        : expertWeights.height * aggregateHeight
+            + expertWeights.lines * clearedLines
+            + expertWeights.holes * holes
+            + expertWeights.roughness * roughness;
     return {
         averageHeight,
         aggregateHeight,
@@ -214,7 +250,15 @@ const resolveNextMatrix = (next) => {
     throw new Error("La prochaine pièce de l'IA est invalide");
 };
 
+/**
+ * Choisit et exécute des placements de Tetris selon un niveau de difficulté.
+ */
 export class AIPlayer {
+    /**
+     * Configure le niveau, la source aléatoire et les pondérations expertes.
+     * @param {{level?: "beginner"|"intermediate"|"expert", rng?: () => number, expertWeights?: {height?: number, lines?: number, holes?: number, roughness?: number}}} [options] Configuration de l'IA.
+     * @throws {Error} Si le niveau, le générateur ou les pondérations sont invalides.
+     */
     constructor({ level = "intermediate", rng = Math.random, expertWeights } = {}) {
         if (!AI_LEVELS.includes(level)) {
             throw new Error("Le niveau de l'IA doit être beginner, intermediate ou expert");
@@ -225,9 +269,11 @@ export class AIPlayer {
         if (
             expertWeights !== undefined
             && (
-                !expertWeights
-                || Object.keys(DEFAULT_EXPERT_WEIGHTS).some((key) => (
-                    !Number.isFinite(expertWeights[key])
+                typeof expertWeights !== "object"
+                || Array.isArray(expertWeights)
+                || Object.keys(expertWeights).some((key) => (
+                    !(key in DEFAULT_EXPERT_WEIGHTS)
+                    || !Number.isFinite(expertWeights[key])
                 ))
             )
         ) {
@@ -242,6 +288,14 @@ export class AIPlayer {
         this.plan = null;
     }
 
+    /**
+     * Choisit une rotation et une colonne pour la pièce donnée.
+     * @param {Array<Array<number|string>>} grid Grille actuelle.
+     * @param {{matrix: number[][], x: number, y: number}} piece Pièce actuelle.
+     * @param {string|number[][]|{matrix: number[][]}} next Prochaine pièce, ou son type.
+     * @returns {{rotation: number, column: number}} Placement légal choisi.
+     * @throws {Error} Si aucun placement n'est possible, si la pièce suivante est invalide ou si le générateur ne renvoie pas une valeur valide.
+     */
     decide(grid, piece, next) {
         const placements = getPlacements(grid, piece);
         if (placements.length === 0) {
@@ -303,6 +357,14 @@ export class AIPlayer {
         return { rotation, column };
     }
 
+    /**
+     * Accumule le temps et exécute les actions prévues au rythme du niveau.
+     * @param {GameInstance} instance Partie pilotée par l'IA.
+     * @param {number} elapsedMs Temps écoulé en millisecondes.
+     * @param {{move: (dx: number, dy: number) => unknown, rotate: () => unknown, isActive: () => boolean}} [controls] Commandes fournies par le gestionnaire pour les matchs multijoueurs.
+     * @returns {object} État courant de la partie.
+     * @throws {Error} Si le temps, les commandes du gestionnaire ou une décision de l'IA sont invalides.
+     */
     update(instance, elapsedMs, controls) {
         if (!Number.isFinite(elapsedMs) || elapsedMs < 0) {
             throw new Error("Le temps écoulé doit être un nombre positif ou nul");
@@ -333,6 +395,13 @@ export class AIPlayer {
         return instance.state;
     }
 
+    /**
+     * Fait progresser l'IA vers son placement cible, en recalculant le plan si nécessaire.
+     * @param {GameInstance} instance Partie pilotée par l'IA.
+     * @param {{move: (dx: number, dy: number) => unknown, rotate: () => unknown}} [controls] Commandes déléguées au gestionnaire.
+     * @returns {void}
+     * @throws {Error} Si aucune décision légale ne peut être calculée.
+     */
     advance(instance, controls) {
         if (!this.plan || this.plan.grid !== instance.grid) {
             const baseMatrix = copyMatrix(instance.currentPiece.matrix);

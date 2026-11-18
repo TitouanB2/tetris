@@ -10,6 +10,12 @@ import { calculateLevel, calculateLineScore, getDropInterval } from "./scoring.j
 
 const PIECE_TYPES = Object.keys(PIECES);
 
+/**
+ * Crée un générateur pseudo-aléatoire déterministe à partir d'une graine entière.
+ * @param {number} seed Graine entière du générateur.
+ * @returns {() => number} Fonction qui produit une valeur dans [0, 1[.
+ * @throws {Error} Si la graine n'est pas un entier.
+ */
 export const createSeededRng = (seed) => {
     if (!Number.isInteger(seed)) {
         throw new Error("La graine doit être un entier");
@@ -40,6 +46,12 @@ const createPiece = (type) => {
     };
 };
 
+/**
+ * Crée l'état initial d'une partie avec une grille et deux pièces tirées au sort.
+ * @param {{rng?: () => number, seed?: number}} [options] Source d'aléatoire; fournir au plus l'une des deux options.
+ * @returns {{grid: Array<Array<number|string>>, currentPiece: object, nextPiece: string, status: string, lastClearedLines: number, score: number, lines: number, level: number, dropInterval: number, rng: () => number}} État initial de la partie.
+ * @throws {Error} Si les options, la graine ou les valeurs du générateur sont invalides.
+ */
 export const createGame = ({ rng, seed } = {}) => {
     if (rng !== undefined && seed !== undefined) {
         throw new Error("Fournissez une graine ou un générateur aléatoire, pas les deux");
@@ -115,6 +127,14 @@ const lockCurrentPiece = (state) => {
     };
 };
 
+/**
+ * Déplace la pièce courante d'une case et la verrouille si elle touche le bas.
+ * @param {object} state État courant d'une partie.
+ * @param {number} dx Déplacement horizontal, -1, 0 ou 1.
+ * @param {number} dy Déplacement vertical, -1, 0 ou 1.
+ * @returns {object} Nouvel état de partie; l'état est inchangé si le déplacement est bloqué latéralement.
+ * @throws {Error} Si le déplacement n'est pas d'une seule case horizontale ou verticale.
+ */
 export const movePiece = (state, dx, dy) => {
     if (!Number.isInteger(dx) || !Number.isInteger(dy) || Math.abs(dx) + Math.abs(dy) !== 1) {
         throw new Error("Un déplacement doit être d'une case horizontale ou verticale");
@@ -136,6 +156,12 @@ export const movePiece = (state, dx, dy) => {
     return { ...state, currentPiece: movedPiece, lastClearedLines: 0 };
 };
 
+/**
+ * Tente de tourner la pièce courante d'un quart de tour horaire.
+ * @param {object} state État courant d'une partie.
+ * @returns {object} Nouvel état avec la pièce tournée, ou l'état inchangé en cas de collision.
+ * @throws {Error} Si la matrice de la pièce courante ne peut pas être tournée.
+ */
 export const rotateCurrentPiece = (state) => {
     if (state.status !== "playing") {
         return state;

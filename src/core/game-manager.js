@@ -4,7 +4,15 @@ import { GameInstance } from "./game-instance.js";
 
 const MAX_PLAYERS = 4;
 
+/**
+ * Orchestre les parties simultanées, l'élimination et le classement final.
+ */
 export class GameManager {
+    /**
+     * Crée une à quatre parties et configure les adversaires IA éventuels.
+     * @param {{playerCount?: number, names?: string[], seed?: number, rngFactory?: (index: number) => () => number, aiLevels?: string[]}} [options] Configuration des joueurs et des générateurs.
+     * @throws {Error} Si le nombre de joueurs, les noms ou les sources aléatoires sont invalides.
+     */
     constructor({ playerCount = 1, names, seed, rngFactory, aiLevels = [] } = {}) {
         if (!Number.isInteger(playerCount) || playerCount < 1 || playerCount > MAX_PLAYERS) {
             throw new Error(`Le nombre de joueurs doit être compris entre 1 et ${MAX_PLAYERS}`);
@@ -55,14 +63,17 @@ export class GameManager {
         this.syncEliminations();
     }
 
+    /** @returns {number} Nombre de parties gérées. */
     get playerCount() {
         return this.instances.length;
     }
 
+    /** @returns {GameInstance[]} Parties qui ne sont pas terminées. */
     get activeInstances() {
         return this.instances.filter((instance) => instance.isAlive);
     }
 
+    /** @returns {GameInstance[]} Classement complet, disponible après la fin de la partie. */
     get podium() {
         if (this.status !== "finished") {
             return [];
@@ -78,6 +89,12 @@ export class GameManager {
         return winner ? [winner, ...others] : others;
     }
 
+    /**
+     * Retourne une partie par son index.
+     * @param {number} index Index du joueur, de zéro à playerCount - 1.
+     * @returns {GameInstance} Partie correspondante.
+     * @throws {Error} Si l'index ne désigne aucun joueur.
+     */
     getInstance(index) {
         if (!Number.isInteger(index) || index < 0 || index >= this.instances.length) {
             throw new Error("Joueur inconnu");
@@ -85,6 +102,14 @@ export class GameManager {
         return this.instances[index];
     }
 
+    /**
+     * Applique un déplacement à un joueur puis vérifie les éliminations.
+     * @param {number} index Index du joueur.
+     * @param {number} dx Déplacement horizontal.
+     * @param {number} dy Déplacement vertical.
+     * @returns {object} État de la partie ciblée.
+     * @throws {Error} Si l'index ou le déplacement est invalide.
+     */
     movePlayer(index, dx, dy) {
         if (this.status !== "playing") {
             return this.getInstance(index).state;
@@ -96,6 +121,12 @@ export class GameManager {
         return result;
     }
 
+    /**
+     * Applique une rotation à un joueur.
+     * @param {number} index Index du joueur.
+     * @returns {object} État de la partie ciblée.
+     * @throws {Error} Si l'index est invalide.
+     */
     rotatePlayer(index) {
         if (this.status !== "playing") {
             return this.getInstance(index).state;
@@ -103,6 +134,12 @@ export class GameManager {
         return this.getInstance(index).rotate();
     }
 
+    /**
+     * Avance le temps de toutes les parties et fait jouer les IA actives.
+     * @param {number} elapsedMs Temps écoulé en millisecondes.
+     * @returns {GameManager} Ce gestionnaire, pour permettre le chaînage.
+     * @throws {Error} Si le temps écoulé n'est pas un nombre fini positif ou nul.
+     */
     update(elapsedMs) {
         if (!Number.isFinite(elapsedMs) || elapsedMs < 0) {
             throw new Error("Le temps écoulé doit être un nombre positif ou nul");
@@ -130,6 +167,10 @@ export class GameManager {
         return this;
     }
 
+    /**
+     * Termine le match lorsque le joueur solo est éliminé ou qu'il ne reste qu'un survivant en VS.
+     * @returns {void}
+     */
     checkCompletion() {
         if (this.status !== "playing") {
             return;
@@ -140,6 +181,10 @@ export class GameManager {
         }
     }
 
+    /**
+     * Enregistre l'instant d'élimination de chaque partie terminée.
+     * @returns {void}
+     */
     syncEliminations() {
         for (const instance of this.instances) {
             if (!instance.isAlive && !this.eliminationTimes.has(instance)) {

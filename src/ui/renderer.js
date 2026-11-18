@@ -4,7 +4,7 @@ import { PIECES, PIECE_COLORS } from "../core/piece.js";
 const CELL_SIZE = 30;
 const BOARD_BACKGROUND = "#0b1220";
 const GRID_COLOR = "#263449";
-let lastAnimatedState = null;
+const lastAnimatedStateByCanvas = new WeakMap();
 
 const drawCell = (context, x, y, color, size = CELL_SIZE) => {
     context.fillStyle = color;
@@ -90,8 +90,11 @@ export const renderGame = ({ boardCanvas, nextCanvas, state, message = "" }) => 
         }
     }));
 
-    if (state.lastClearedLines > 0 && state !== lastAnimatedState) {
-        lastAnimatedState = state;
+    if (
+        state.lastClearedLines > 0
+        && lastAnimatedStateByCanvas.get(boardCanvas) !== state
+    ) {
+        lastAnimatedStateByCanvas.set(boardCanvas, state);
         const view = boardCanvas.ownerDocument?.defaultView;
         const prefersReducedMotion = view?.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
         if (!prefersReducedMotion && typeof boardCanvas.animate === "function") {

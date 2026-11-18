@@ -32,6 +32,29 @@ describe("GameManager", () => {
         expect(manager.instances.map((instance) => instance.currentPiece.type)).toEqual(["I", "O"]);
     });
 
+    it("reproduit les parties IA lorsque la même graine est réutilisée", () => {
+        const runMatch = () => {
+            const manager = new GameManager({
+                playerCount: 2,
+                aiLevels: ["beginner"],
+                seed: 41
+            });
+            for (let tick = 0; tick < 50; tick += 1) {
+                manager.update(50);
+            }
+            return manager.instances.map((instance) => ({
+                grid: instance.grid,
+                pieceType: instance.currentPiece.type,
+                pieceX: instance.currentPiece.x,
+                pieceY: instance.currentPiece.y,
+                alive: instance.isAlive,
+                score: instance.score
+            }));
+        };
+
+        expect(runMatch()).toEqual(runMatch());
+    });
+
     it("associe un adversaire IA à chaque joueur VS et les fait jouer", () => {
         const manager = new GameManager({
             playerCount: 4,

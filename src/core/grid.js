@@ -35,6 +35,13 @@ const validatePosition = (x, y) => {
     }
 };
 
+/**
+ * Crée une grille vide dont chaque case vaut zéro.
+ * @param {number} [width=GRID_WIDTH] Nombre de colonnes.
+ * @param {number} [height=GRID_HEIGHT] Nombre de lignes.
+ * @returns {number[][]} Nouvelle grille indépendante.
+ * @throws {Error} Si la largeur ou la hauteur n'est pas un entier positif.
+ */
 export const createGrid = (width = GRID_WIDTH, height = GRID_HEIGHT) => {
     if (!Number.isInteger(width) || width <= 0 || !Number.isInteger(height) || height <= 0) {
         throw new Error("La largeur et la hauteur doivent être des entiers positifs");
@@ -43,6 +50,16 @@ export const createGrid = (width = GRID_WIDTH, height = GRID_HEIGHT) => {
     return Array.from({ length: height }, () => Array(width).fill(0));
 };
 
+/**
+ * Vérifie si une pièce entre en collision avec les limites ou les cases occupées.
+ * Les cases de la pièce situées au-dessus de la grille ne sont pas bloquantes.
+ * @param {Array<Array<number|string>>} grid Grille de jeu rectangulaire.
+ * @param {number[][]} piece Matrice de la pièce composée de zéros et de uns.
+ * @param {number} x Coordonnée horizontale de la pièce.
+ * @param {number} y Coordonnée verticale de la pièce.
+ * @returns {boolean} Vrai si la pièce entre en collision.
+ * @throws {Error} Si la grille, la pièce ou les coordonnées sont invalides.
+ */
 export const hasCollision = (grid, piece, x, y) => {
     validateGrid(grid);
     validatePiece(piece);
@@ -65,6 +82,16 @@ export const hasCollision = (grid, piece, x, y) => {
     }));
 };
 
+/**
+ * Pose une pièce dans une copie de la grille sans modifier la grille d'origine.
+ * @param {Array<Array<number|string>>} grid Grille de jeu rectangulaire.
+ * @param {number[][]} piece Matrice de la pièce composée de zéros et de uns.
+ * @param {number} x Coordonnée horizontale de la pièce.
+ * @param {number} y Coordonnée verticale de la pièce.
+ * @param {number|string} [value=1] Valeur inscrite dans les cases occupées.
+ * @returns {Array<Array<number|string>>} Nouvelle grille avec la pièce posée.
+ * @throws {Error} Si les entrées sont invalides, si la pièce entre en collision ou reste au-dessus de la grille.
+ */
 export const placePiece = (grid, piece, x, y, value = 1) => {
     validateGrid(grid);
     validatePiece(piece);
@@ -90,6 +117,12 @@ export const placePiece = (grid, piece, x, y, value = 1) => {
     return nextGrid;
 };
 
+/**
+ * Supprime les lignes complètes et ajoute des lignes vides en haut de la grille.
+ * @param {Array<Array<number|string>>} grid Grille de jeu rectangulaire.
+ * @returns {{grid: Array<Array<number|string>>, clearedLines: number}} Grille résultante et nombre de lignes supprimées.
+ * @throws {Error} Si la grille n'est pas rectangulaire ou est vide.
+ */
 export const clearFullLines = (grid) => {
     validateGrid(grid);
 

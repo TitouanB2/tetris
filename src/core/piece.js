@@ -47,7 +47,12 @@ export const PIECE_COLORS = {
     L: "#FFA500"
 };
 
-/**Fait tourner un matrice carrée d'un quart de tour horaire */
+/**
+ * Fait tourner une matrice carrée d'un quart de tour dans le sens horaire.
+ * @param {number[][]} matrix Matrice carrée à tourner.
+ * @returns {number[][]} Nouvelle matrice tournée.
+ * @throws {Error} Si l'entrée n'est pas un tableau de lignes carrées.
+ */
 export const rotate = (matrix) => {
     if (!Array.isArray(matrix)) {
         throw new Error("La matrice doit être carrée");

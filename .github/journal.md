@@ -227,7 +227,41 @@ Le dernier rapport `npm run coverage` mesure 93,7 % des lignes, 94,19 % des inst
 
 **Réponse :** J’ai doublé chaque coefficient séparément en gardant les mêmes cinq graines et les mêmes pièces pour comparer les effets. La moyenne de référence était de **1 356,4 lignes**. En doublant le coefficient de hauteur agrégée (de −0,51 à −1,02), elle est tombée à **284,6 lignes**, le plus grand écart observé. Doubler le bonus de lignes (0,76 à 1,52) l’a portée à **1 564,6**; doubler les pénalités de trous ou d’irrégularité l’a ramenée à **628** et **625,4**. Il s’agit d’une comparaison exploratoire sur cinq graines, pas d’une mesure statistique définitive. Non, l’agent n’a pas proposé l’expérience de lui-même j'ai donc réalisé un prompt
 
-# Exercice 6 :
+# Exercice 6 : Documentation et revue
 
-##
+## 1 Documenter les API publiques du cœur
 
+**Prompt :** «  ajoute une documentation JSDoc pour chaque fichier contenus dans `src/core`s  JSDoc (description, `@param`, `@returns`, `@throws`) à chaque fonction exportée, puis relis chaque diff. »
+
+**Correction liée :** ajouté la JSDoc aux fonctions exportées de `grid.js`, `piece.js`, `scoring.js`, `game.js` et `ai.js`, ainsi qu'aux classes et méthodes publiques de `GameInstance` et `GameManager`. Les paramètres, valeurs retournées et erreurs documentés ont été vérifiés par rapport au comportement du code. Aucun comportement du jeu n'a été changé dans cette étape.
+**Outil utilisé :** Copilot, mode Edit.
+
+## 2 Rédiger le README et l’architecture
+
+**Prompt :** « En mode Agent avec `#codebase`, complète `README.md` (description, installation, lancement, commandes, règles et description des trois IA) et crée `docs/ARCHITECTURE.md` avec un diagramme de classes et un diagramme de séquence d’un tour de jeu en Mermaid, à rendre dans l’aperçu Markdown de VS Code. »
+
+**Correction liée :** complété `README.md` avec l’installation, le lancement via HTTP, les commandes npm, les règles, les contrôles et les trois niveaux d’IA. Créé `docs/ARCHITECTURE.md` avec les diagrammes Mermaid des classes et d’un tour de jeu.
+
+**Réponse :** les diagrammes représentent les dépendances entre interface, gestionnaire, parties, IA et règles du cœur. Leur source Mermaid est intégrée au document; l’aperçu VS Code n’était pas accessible dans l’environnement de cette session, donc le rendu visuel n’a pas pu être vérifié ici.
+
+**Outil utilisé :** Copilot, mode Agent.
+
+## 3 Relire le cœur et l’interface et corriger les deux constats prioritaires
+
+**Prompt :** « Avec `#codebase`, relis `src/core` et `src/ui` : bugs, duplications, fonctions trop longues, noms trompeurs; classe les constats par gravité et ne modifie rien pendant la revue. Traite ensuite les deux remarques les plus sérieuses. »
+
+**Correction liée :** la revue sans modification a relevé un défaut confirmé de gravité moyenne : `renderer.js` mémorisait globalement le dernier état animé, ce qui pouvait relancer l’animation de lignes à chaque rendu alterné de plusieurs plateaux. Le suivi est maintenant indépendant par canvas via un `WeakMap`, couvert par un test. La revue a aussi signalé le partage du générateur de pièces et de l’IA débutante; après vérification, ce partage ne brise pas la reproductibilité avec une graine fixe et aucune règle n’exige des flux indépendants. La séparation proposée a donc été annulée; un test confirme qu’une même graine reproduit le même état de match. Aucun nom trompeur ni duplication de règles n’a justifié de changement supplémentaire; le rendu comporte toutefois plusieurs responsabilités, retenues comme remarque de faible gravité.
+
+
+**Outil utilisé :** Copilot, revue `#codebase`, Vitest.
+
+# Questions
+## A. Trouver une JSDoc inexacte (paramètre oublié, retour faux, effet de bord passé sous silence) et la corriger.
+## B. Le diagramme de classes montre-t-il une dépendance qui n’existe pas dans le code, ou en oublie-t-il une ? Vérifier avec les import des fichiers.
+## C. Parmi les remarques de la revue, laquelle était fausse ? Comment l’avez-vous établi ?
+
+**Réponse A :** la JSDoc de `GameManager.checkCompletion()` indiquait que le match se termine lorsqu’il reste un survivant. C’était incomplet : en solo, la partie se termine aussi quand le joueur est éliminé et qu’il n’en reste aucun. J’ai corrigé la description pour distinguer la règle solo de la règle VS.
+
+**Réponse B :** oui. L’ancien diagramme attribuait à `Renderer` une dépendance directe vers `GameInstance` et à `Input` une dépendance directe vers `GameManager`; leurs fichiers n’importent pas ces classes. C’est `main.js` qui importe et relie le gestionnaire, les callbacks d’entrée et le rendu. Le diagramme a été corrigé pour montrer `Main` comme lien et ajouter les imports réels omis : `GameManager` vers `GameRules` (générateur graine), `GameRules` vers `PieceRules` et `ScoringRules`, `AIPlayer` vers `GridRules` et `PieceRules`, et `Renderer` vers `GridRules` et `PieceRules`. `AIPlayer` utilise l’API de `GameInstance` reçue en paramètre, sans import ES direct.
+
+**Réponse C :** le faux positif était de classer le partage du générateur aléatoire entre l’IA débutante et sa partie comme un bug de reproductibilité. Le partage influence effectivement l’ordre de consommation des valeurs aléatoires, mais il reste déterministe avec une graine et n’enfreint aucune règle de la spécification. Je l’ai établi par lecture de `createSeededRng` et par un test qui exécute deux matchs avec la même graine et compare les états obtenus. La séparation du générateur, qui n’était pas nécessaire, a été annulée. Le défaut d’animation, lui, reste confirmé par un test multi-plateaux.

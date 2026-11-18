@@ -100,6 +100,8 @@ describe("AIPlayer", () => {
             level: "expert",
             expertWeights: { lines: Number.NaN }
         })).toThrow("nombres finis");
+        expect(() => evaluateBoard(grid, 1, "expert", { typo: 1 })).toThrow("nombres finis");
+        expect(() => evaluateBoard(grid, 1, "expert", 1)).toThrow("nombres finis");
     });
 
     it("préfère le placement qui complète une ligne évidente", () => {

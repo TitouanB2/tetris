@@ -49,4 +49,37 @@ describe("renderGame", () => {
 
         expect(board.canvas.animate).not.toHaveBeenCalled();
     });
+
+    it("garde un suivi d'animation distinct pour chaque plateau", () => {
+        const firstBoard = createCanvas();
+        const firstNext = createCanvas();
+        const secondBoard = createCanvas();
+        const secondNext = createCanvas();
+        const firstState = { ...createGame({ rng: () => 0 }), lastClearedLines: 1 };
+        const secondState = { ...createGame({ rng: () => 0.2 }), lastClearedLines: 2 };
+
+        renderGame({
+            boardCanvas: firstBoard.canvas,
+            nextCanvas: firstNext.canvas,
+            state: firstState
+        });
+        renderGame({
+            boardCanvas: secondBoard.canvas,
+            nextCanvas: secondNext.canvas,
+            state: secondState
+        });
+        renderGame({
+            boardCanvas: firstBoard.canvas,
+            nextCanvas: firstNext.canvas,
+            state: firstState
+        });
+        renderGame({
+            boardCanvas: secondBoard.canvas,
+            nextCanvas: secondNext.canvas,
+            state: secondState
+        });
+
+        expect(firstBoard.canvas.animate).toHaveBeenCalledOnce();
+        expect(secondBoard.canvas.animate).toHaveBeenCalledOnce();
+    });
 });
