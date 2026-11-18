@@ -11,6 +11,7 @@ const getElement = (id) => {
 };
 
 const modeSelection = getElement("mode-selection");
+const aiDifficulty = getElement("ai-difficulty");
 const gameView = getElement("game-view");
 const playersElement = getElement("players");
 const statusElement = getElement("game-status");
@@ -43,6 +44,13 @@ const createPlayerCard = (instance, index) => {
     const title = document.createElement("h2");
     title.className = "player-card__name";
     title.textContent = instance.name;
+
+    const aiPlayer = manager.aiPlayers.get(index);
+    const playerType = document.createElement("p");
+    playerType.className = "player-card__help";
+    playerType.textContent = aiPlayer
+        ? `IA · ${aiPlayer.label}`
+        : index === 0 ? PLAYER_CONTROLS[0] : PLAYER_CONTROLS[index];
 
     const content = document.createElement("div");
     content.className = "player-card__content";
@@ -83,17 +91,13 @@ const createPlayerCard = (instance, index) => {
     level.append(levelLabel, levelValue);
     stats.append(score, level);
 
-    const controls = document.createElement("p");
-    controls.className = "player-card__help";
-    controls.textContent = PLAYER_CONTROLS[index];
-
     const playerStatus = document.createElement("p");
     playerStatus.className = "player-card__status";
     playerStatus.setAttribute("aria-live", "polite");
 
-    sidebar.append(previewTitle, preview, stats, controls, playerStatus);
+    sidebar.append(previewTitle, preview, stats, playerStatus);
     content.append(board, sidebar);
-    card.append(title, content);
+    card.append(title, playerType, content);
     playersElement.append(card);
 
     return { card, board, preview, score: scoreValue, level: levelValue, status: playerStatus };
@@ -170,7 +174,11 @@ const stopTimer = () => {
 
 const createManager = (playerCount) => {
     stopTimer();
-    manager = new GameManager({ playerCount });
+    const aiLevels = Array.from(
+        { length: playerCount - 1 },
+        () => aiDifficulty.value
+    );
+    manager = new GameManager({ playerCount, aiLevels });
     playersElement.replaceChildren();
     playerCards = manager.instances.map(createPlayerCard);
     playersElement.dataset.count = String(playerCount);
@@ -260,7 +268,7 @@ changeModeButton.addEventListener("click", () => {
 });
 
 setupInput({
-    playerCount: 4,
+    playerCount: 1,
     onMove: move,
     onRotate: rotate,
     onTogglePause: togglePause

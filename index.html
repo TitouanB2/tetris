@@ -17,6 +17,14 @@
 
             <section id="mode-selection" class="mode-selection" aria-labelledby="mode-title">
                 <h2 id="mode-title">Choisir un mode</h2>
+                <label class="mode-selection__difficulty" for="ai-difficulty">
+                    Niveau des IA
+                    <select id="ai-difficulty">
+                        <option value="beginner">Débutant</option>
+                        <option value="intermediate" selected>Intermédiaire</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </label>
                 <div class="mode-selection__buttons">
                     <button type="button" data-player-count="1">Solo</button>
                     <button type="button" data-player-count="2">VS 1 adversaire</button>

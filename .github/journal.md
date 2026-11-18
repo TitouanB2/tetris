@@ -75,7 +75,6 @@ faire passer un test qui échoue : Ask avec context
 
 # Exercice 2 Tetris solo, par étapes planifiées
 
-## 2
 
 ## Proposer cinq étapes testables pour Tetris
 
@@ -198,4 +197,37 @@ Le dernier rapport `npm run coverage` mesure 93,7 % des lignes, 94,19 % des inst
 ### B. Comparer git diff ex3 ex4 –stat avec ce que vous auriez modifié à la main : l’agent a-t-il touché des fichiers inutiles ?
 
 **Réponse :** Non (sauf si le css n'est pas nécessaire)
+
+# Exercice 5 Joueurs IA : trois niveaux
+
+## 1
+ **Prompt :** A partir du fichier #SPEC-IA.md implémente les différentes fonctions qui sont précisées dans le fichier, les adversaire du joueur seront donc des IA, les spécificités sont décrite dans le fichier, une partie VS 3 adversaires se déroule jusqu’au podium
+
+**Correction liée :** ajouté `AIPlayer` dans `src/core/ai.js` avec les niveaux débutant (placement aléatoire), intermédiaire (hauteur moyenne, trous et lignes complétées) et expert (score pondéré avec anticipation de la pièce suivante). Le `GameManager` fait jouer les IA pas à pas avec un délai adapté au niveau; le mode permet de choisir la difficulté et l’affiche sous leur pseudo. Le VS contre trois IA continue jusqu’au dernier survivant et affiche le podium. Ajout de tests pour les décisions, les actions et le podium; mise à jour de `docs/SPEC.md`.
+
+## 2 Tester les évaluations des IA
+
+**Prompt :** « Dans le fichier `ai.test.js` développé précédemment, teste les fonctions d’évaluation sur des grilles construites à la main (trous, irrégularité, hauteur), le choix de la meilleure position dans un cas évident, et vérifie que chaque décision est jouable par les fonctions publiques de `GameInstance`. »
+
+**Correction liée :** ajouté des tests sur les métriques et scores de grilles construites, le placement qui complète une ligne, et l’exécution des décisions débutant, intermédiaire et expert avec `GameInstance.move()` et `GameInstance.rotate()`. Exporté `evaluateBoard` pour tester directement les évaluations. Vérification : 78 tests réussis sur 9 fichiers; couverture de `src/core` à 93,96 % des lignes et 91,74 % des branches.
+
+
+## 3 Simuler 20 parties par niveau
+
+**Prompt :** « Rajoute un script `scripts/simulate.js` qui joue 20 parties sans affichage par niveau, avec une graine fixe, et affiche le nombre moyen de lignes complétées; l’expert doit compléter plus de lignes que le débutant. »
+
+**Correction liée :** ajouté `scripts/simulate.js`, qui exécute 20 parties déterministes pour chaque niveau et échoue explicitement si la moyenne experte n’est pas supérieure à la moyenne débutante. Ajout de la commande `npm run simulate`. Résultat vérifié : débutant 0,00 ligne, intermédiaire 1,35 ligne et expert 1 413,75 lignes en moyenne sur 20 parties.
+
+### Questions
+## A. Pourquoi exiger que l’IA joue avec les mêmes fonctions que l’humain plutôt que de poser directement la pièce dans la grille ?
+
+**Réponse :** Pour que l’IA suive le même chemin d’exécution que le joueur : déplacements et rotations passent par `GameInstance`, puis par les règles du moteur pour vérifier les collisions, verrouiller la pièce, éliminer les lignes et mettre à jour le score et l’état. Cela évite d’avoir deux implémentations de règles qui pourraient diverger, et permet de tester les décisions IA comme des actions réellement jouables.
+
+## B. Faire varier une pondération de l’expert avec la simulation : laquelle a le plus d’effet ? L’agent a-t-il proposé cette expérience de lui-même 
+
+**Réponse :** J’ai doublé chaque coefficient séparément en gardant les mêmes cinq graines et les mêmes pièces pour comparer les effets. La moyenne de référence était de **1 356,4 lignes**. En doublant le coefficient de hauteur agrégée (de −0,51 à −1,02), elle est tombée à **284,6 lignes**, le plus grand écart observé. Doubler le bonus de lignes (0,76 à 1,52) l’a portée à **1 564,6**; doubler les pénalités de trous ou d’irrégularité l’a ramenée à **628** et **625,4**. Il s’agit d’une comparaison exploratoire sur cinq graines, pas d’une mesure statistique définitive. Non, l’agent n’a pas proposé l’expérience de lui-même j'ai donc réalisé un prompt
+
+# Exercice 6 :
+
+##
 

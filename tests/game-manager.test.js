@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { GameManager } from "../src/core/game-manager.js";
 
 describe("GameManager", () => {
@@ -30,6 +30,47 @@ describe("GameManager", () => {
 
         expect(manager.instances.map((instance) => instance.name)).toEqual(["Ada", "Lin"]);
         expect(manager.instances.map((instance) => instance.currentPiece.type)).toEqual(["I", "O"]);
+    });
+
+    it("associe un adversaire IA à chaque joueur VS et les fait jouer", () => {
+        const manager = new GameManager({
+            playerCount: 4,
+            aiLevels: ["beginner", "intermediate", "expert"],
+            seed: 10
+        });
+        const movePlayer = vi.spyOn(manager, "movePlayer");
+        const rotatePlayer = vi.spyOn(manager, "rotatePlayer");
+        const initialStates = manager.instances.slice(1).map((instance) => instance.state);
+
+        expect(manager.instances.map((instance) => instance.name)).toEqual([
+            "Joueur 1",
+            "IA 1",
+            "IA 2",
+            "IA 3"
+        ]);
+        expect([...manager.aiPlayers.values()].map((ai) => ai.level)).toEqual([
+            "beginner",
+            "intermediate",
+            "expert"
+        ]);
+
+        manager.update(300);
+
+        expect(manager.instances.slice(1).every((instance, index) => (
+            instance.state !== initialStates[index]
+        ))).toBe(true);
+        expect(movePlayer.mock.calls.length + rotatePlayer.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    it("valide la configuration des niveaux IA", () => {
+        expect(() => new GameManager({
+            playerCount: 3,
+            aiLevels: ["beginner"]
+        })).toThrow("un niveau d'IA valide par adversaire");
+        expect(() => new GameManager({
+            playerCount: 2,
+            aiLevels: ["impossible"]
+        })).toThrow("un niveau d'IA valide par adversaire");
     });
 
     it("expose les joueurs et rejette un index inconnu", () => {
@@ -128,6 +169,48 @@ describe("GameManager", () => {
         expect(manager.status).toBe("playing");
         expect(manager.winner).toBeNull();
         expect(manager.podium).toEqual([]);
+    });
+
+    it("continue le VS jusqu'à ce qu'il ne reste qu'un joueur vivant puis affiche le podium", () => {
+        const manager = new GameManager({
+            playerCount: 4,
+            aiLevels: ["beginner", "intermediate", "expert"],
+            seed: 21
+        });
+        manager.instances[0].state = {
+            ...manager.instances[0].state,
+            status: "gameOver",
+            score: 100
+        };
+
+        manager.update(0);
+        expect(manager.status).toBe("playing");
+        expect(manager.podium).toEqual([]);
+
+        manager.instances[1].state = {
+            ...manager.instances[1].state,
+            status: "gameOver",
+            score: 200
+        };
+        manager.instances[2].state = {
+            ...manager.instances[2].state,
+            status: "gameOver",
+            score: 300
+        };
+        manager.instances[3].state = {
+            ...manager.instances[3].state,
+            score: 400
+        };
+        manager.update(0);
+
+        expect(manager.status).toBe("finished");
+        expect(manager.winner.name).toBe("IA 3");
+        expect(manager.podium.map((instance) => instance.name)).toEqual([
+            "IA 3",
+            "IA 2",
+            "IA 1",
+            "Joueur 1"
+        ]);
     });
 
     it("utilise l'ordre des joueurs pour départager les scores identiques", () => {

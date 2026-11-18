@@ -1,10 +1,11 @@
 import { createSeededRng } from "./game.js";
+import { AI_LEVELS, AIPlayer } from "./ai.js";
 import { GameInstance } from "./game-instance.js";
 
 const MAX_PLAYERS = 4;
 
 export class GameManager {
-    constructor({ playerCount = 1, names, seed, rngFactory } = {}) {
+    constructor({ playerCount = 1, names, seed, rngFactory, aiLevels = [] } = {}) {
         if (!Number.isInteger(playerCount) || playerCount < 1 || playerCount > MAX_PLAYERS) {
             throw new Error(`Le nombre de joueurs doit être compris entre 1 et ${MAX_PLAYERS}`);
         }
@@ -17,12 +18,20 @@ export class GameManager {
         if (rngFactory !== undefined && typeof rngFactory !== "function") {
             throw new Error("La fabrique de générateurs aléatoires doit être une fonction");
         }
+        if (
+            !Array.isArray(aiLevels)
+            || (aiLevels.length > 0 && aiLevels.length !== playerCount - 1)
+            || aiLevels.some((level) => !AI_LEVELS.includes(level))
+        ) {
+            throw new Error("Il faut fournir un niveau d'IA valide par adversaire");
+        }
         if (seed !== undefined && rngFactory !== undefined) {
             throw new Error("Fournissez une graine ou une fabrique de générateurs, pas les deux");
         }
 
         this.instances = Array.from({ length: playerCount }, (_, index) => {
-            const name = names?.[index] ?? `Joueur ${index + 1}`;
+            const aiLevel = aiLevels[index - 1];
+            const name = names?.[index] ?? (aiLevel ? `IA ${index}` : `Joueur ${index + 1}`);
             const options = { name };
             if (rngFactory) {
                 options.rng = rngFactory(index);
@@ -30,6 +39,14 @@ export class GameManager {
                 options.rng = createSeededRng(seed + index);
             }
             return new GameInstance(options);
+        });
+        this.aiPlayers = new Map();
+        aiLevels.forEach((level, index) => {
+            const instance = this.instances[index + 1];
+            this.aiPlayers.set(index + 1, new AIPlayer({
+                level,
+                rng: instance.state.rng
+            }));
         });
         this.status = "playing";
         this.winner = null;
@@ -97,6 +114,16 @@ export class GameManager {
         this.elapsedMs += elapsedMs;
         for (const instance of this.activeInstances) {
             instance.update(elapsedMs);
+        }
+        for (const [index, aiPlayer] of this.aiPlayers) {
+            const instance = this.instances[index];
+            if (instance.isAlive) {
+                aiPlayer.update(instance, elapsedMs, {
+                    move: (dx, dy) => this.movePlayer(index, dx, dy),
+                    rotate: () => this.rotatePlayer(index),
+                    isActive: () => this.status === "playing"
+                });
+            }
         }
         this.syncEliminations();
         this.checkCompletion();
